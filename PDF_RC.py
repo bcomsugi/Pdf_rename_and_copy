@@ -128,6 +128,8 @@ def get_value_for_filename(filename, datalist):
 
 datalist=get_data_list(filelist)
 folder = 'result'
+success_count=0
+fail_count=0
 for filename in filelist:
     # print(f'filename={filename} => {get_value_for_filename(filename,get_data_list(filelist))}')
     values=get_value_for_filename(filename,datalist)
@@ -144,8 +146,10 @@ for filename in filelist:
         print(old_name_fullpath, new_filename_fullpath)
         try:
             os.rename(old_name_fullpath, new_filename_fullpath) #rename to the original folder, not yet move or copy
+            success_count+=1
         except Exception as e :
             print(str(e))
+            fail_count+=1
 
         # copy/move to destination folder
         target_copy_folder_name=os.path.join(target_directory_fullpath, new_city_foldername, new_year_foldername, new_cust_foldername)
@@ -156,6 +160,11 @@ for filename in filelist:
         target_copy_filename = os.path.join(target_copy_folder_name, new_filename)
         print(f'target filename fullpath={target_copy_filename}')
         shutil.copy(new_filename_fullpath, target_copy_filename)
-
+    else:
+        fail_count+=1
 #finish copy to temp folder and rename and copy to target folder, then delete the temp folder   
 shutil.rmtree( temp_directory )
+print("")
+print("")
+print("")
+input(f"From {len(filelist)} PDF Files, SUCCESS={success_count}, Fail={fail_count}, Rename and Copy from {ori_directory_fullpath} to {target_directory_fullpath}. Press the Enter key to Exit: ")
