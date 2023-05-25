@@ -5,6 +5,18 @@ import os
 import shutil
 from configparser import ConfigParser
 
+if os.path.exists(os.path.join(os.getcwd(),'config.ini')):
+    print("config.ini okay")
+else:
+    print("")
+    print("please create file config.ini :")
+    print("[conf]")
+    print("fullpath_ori_directory = ")
+    print("fullpath_target_directory = ")
+    print("")
+    print("")
+    input("Press anykey to Exit:")
+    quit()
 config = ConfigParser()
 config.read('config.ini')
 
@@ -15,6 +27,17 @@ ori_directory_fullpath = config['conf']['fullpath_ori_directory']
 # target_directory_fullpath = os.path.join(os.getcwd(),'targetdir')
 target_directory_fullpath = config['conf']['fullpath_target_directory']
 print(ori_directory_fullpath, target_directory_fullpath)
+if not (os.path.isdir(ori_directory_fullpath) and os.path.isdir(target_directory_fullpath)):
+    print("")
+    print("Please fill the config.ini with the correct directory")
+    print("[conf]")
+    print("fullpath_ori_directory = ")
+    print("fullpath_target_directory = ")
+    print("")
+    print("")
+    input("Press Enter to Exit:")
+    quit()
+    
 temp_directory = os.path.join(os.getcwd(), 'temp')
 # shutil.copytree(ori_directory_fullpath, temp_directory)
 
@@ -29,7 +52,7 @@ def check_or_create_directory(new_DIR):
         return True
 
     else:
-        print(f'{new_DIR} folder already exists.')
+        print(f'Folder already exists=>{new_DIR}')
         return False
     
 def copy_files_to_temp(oridir, tempdir, endwith='.pdf'):
@@ -91,16 +114,16 @@ def get_pdfname_foldername_tosave(filename, str='Gondo Kusumo', j=1):
     filename_fullpath = os.path.join(temp_directory, filename)
     splited = read_pdf(filename_fullpath)
     inv_no = get_data_from(splited, str, j)
-    print(inv_no)
+    # print(inv_no)
     str ='Penerima Jasa Kena Pajak'
     # print(get_data_from(splited, str))
 
     nama_wajib_pajak=get_data_from(splited, str)
     if nama_wajib_pajak:
         nama_wajib_pajak = nama_wajib_pajak.split(':')[1].strip()
-    print(nama_wajib_pajak)
+    # print(nama_wajib_pajak)
     city_date= get_data_from(splited, 'pada Faktur Pajak ini.', j).strip()
-    print(f'city={city_date}')
+    # print(f'city={city_date}')
     city=city_date.split(',')[0].strip()
     date=city_date.split(',')[1].strip()
     datadict={filename: [inv_no, nama_wajib_pajak, city, date]}
@@ -117,7 +140,7 @@ def get_data_list(filelist):
 def get_value_for_filename(filename, datalist):
     for data in datalist:
         for key,val in data.items():
-            print(f'key={key}, val={ val}')
+            # print(f'key={key}, val={ val}')
             if filename == key:
                 return val
 
@@ -130,20 +153,23 @@ datalist=get_data_list(filelist)
 folder = 'result'
 success_count=0
 fail_count=0
+print("")
+print("processing one file at a time:")
 for filename in filelist:
     # print(f'filename={filename} => {get_value_for_filename(filename,get_data_list(filelist))}')
-    values=get_value_for_filename(filename,datalist)
-    print(f'values in list={values}')
+    values=get_value_for_filename(filename, datalist)
+    # print(f'values in list={values}')
 
     new_filename = f'{values[0]}.pdf'
     new_cust_foldername = values[1].strip()
     new_city_foldername = values[2].split(' ')[-1].strip()
     new_year_foldername = values[3].split(' ')[-1].strip()
-    print(new_filename, new_cust_foldername, new_city_foldername, new_year_foldername)
+    print(new_filename, new_city_foldername, new_year_foldername, new_cust_foldername)
     if new_filename:
         old_name_fullpath= os.path.join(temp_directory, filename)
         new_filename_fullpath=os.path.join(temp_directory, new_filename)
-        print(old_name_fullpath, new_filename_fullpath)
+        print(f'old_name_fullpath={old_name_fullpath}')
+        print(f'new_filename_fullpath={new_filename_fullpath}')
         try:
             os.rename(old_name_fullpath, new_filename_fullpath) #rename to the original folder, not yet move or copy
             success_count+=1
@@ -162,9 +188,10 @@ for filename in filelist:
         shutil.copy(new_filename_fullpath, target_copy_filename)
     else:
         fail_count+=1
+    print("")
 #finish copy to temp folder and rename and copy to target folder, then delete the temp folder   
 shutil.rmtree( temp_directory )
 print("")
 print("")
 print("")
-input(f"From {len(filelist)} PDF Files, SUCCESS={success_count}, Fail={fail_count}, Rename and Copy from {ori_directory_fullpath} to {target_directory_fullpath}. Press the Enter key to Exit: ")
+input(f"From {len(filelist)} PDF Files, SUCCESS={success_count}, Fail={fail_count}, Rename and Copy from '{ori_directory_fullpath}'  TO  '{target_directory_fullpath}'. Press the Enter key to Exit: ")
