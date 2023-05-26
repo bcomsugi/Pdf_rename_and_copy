@@ -162,4 +162,4 @@ config.ini
 *.ini
 data ori/
 target dir/
-
+backup/
