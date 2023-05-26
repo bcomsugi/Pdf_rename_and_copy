@@ -14,7 +14,7 @@ else:
     print("[conf]")
     print("fullpath_ori_directory = ")
     print("fullpath_target_directory = ")
-    print("year_backup_folder = ")
+    # print("year_backup_folder = ")
     print("")
     print("")
     input("Press anykey to Exit:")
@@ -42,13 +42,13 @@ month_folder_list = {'Januari':'1. Jan Feb Mar',
                     'November':'4. Okt Nov Des',
                     'Desember':'4. Okt Nov Des', 
                     }
-if 'year_backup_folder' in config['conf']:
-    year_backup_folder = config.get('conf', 'year_backup_folder')
-else:
-    year_backup_folder=2051
-if not year_backup_folder:
-    year_backup_folder = '2050'
-print(f'year_backup_folder={year_backup_folder}')
+# if 'year_backup_folder' in config['conf']:
+#     year_backup_folder = config.get('conf', 'year_backup_folder')
+# else:
+#     year_backup_folder=2051
+# if not year_backup_folder:
+#     year_backup_folder = '2050'
+# # print(f'year_backup_folder={year_backup_folder}')
 # target_directory_fullpath = os.path.join(os.getcwd(),'targetdir')
 target_directory_fullpath = config['conf']['fullpath_target_directory']
 print(f'Source Dir={ori_directory_fullpath}')
@@ -59,7 +59,7 @@ if not (os.path.isdir(ori_directory_fullpath) and target_directory_fullpath):
     print("[conf]")
     print("fullpath_ori_directory = ")
     print("fullpath_target_directory = ")
-    print("year_backup_folder = ")
+    # print("year_backup_folder = ")
     print("")
     print("")
     input("Press Enter to Exit:")
