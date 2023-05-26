@@ -92,7 +92,7 @@ def read_pdf(filename):
         # print(pageObj.extract_text())
         reader_splited+=pageObj.extract_text().split('\n')\
 
-    # print(reader_splited)
+    print(reader_splited)
     pdfFileObj=None
     return reader_splited
 
@@ -120,7 +120,8 @@ def get_pdfname_foldername_tosave(filename, str='Gondo Kusumo', j=1):
     nama_wajib_pajak=get_data_from(splited, str)
     if nama_wajib_pajak:
         nama_wajib_pajak = nama_wajib_pajak.split(':')[1].strip()
-    # print(nama_wajib_pajak)
+        nama_wajib_pajak = nama_wajib_pajak.split('NIK /')[0].strip()
+    print(nama_wajib_pajak)
     city_date= get_data_from(splited, 'pada Faktur Pajak ini.', j).strip()
     # inv_no = get_data_from(splited, str, j)
     inv_no = get_data_from(splited, 'pada Faktur Pajak ini.' , 3)
