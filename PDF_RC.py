@@ -84,7 +84,6 @@ def read_pdf(filename):
     print(f'total pages={tot_pages}')
     reader_splited=[]
     for i in range(tot_pages):
-        print(i)
         # creating a page object
         # pageObj = pdfReader.getPage(0)
         pageObj = pdfReader.pages[i]
@@ -115,8 +114,6 @@ def get_data_from(data, str, j=1):
 def get_pdfname_foldername_tosave(filename, str='Gondo Kusumo', j=1):
     filename_fullpath = os.path.join(temp_directory, filename)
     splited = read_pdf(filename_fullpath)
-    inv_no = get_data_from(splited, str, j)
-    # print(inv_no)
     str ='Penerima Jasa Kena Pajak'
     # print(get_data_from(splited, str))
 
@@ -125,6 +122,10 @@ def get_pdfname_foldername_tosave(filename, str='Gondo Kusumo', j=1):
         nama_wajib_pajak = nama_wajib_pajak.split(':')[1].strip()
     # print(nama_wajib_pajak)
     city_date= get_data_from(splited, 'pada Faktur Pajak ini.', j).strip()
+    # inv_no = get_data_from(splited, str, j)
+    inv_no = get_data_from(splited, 'pada Faktur Pajak ini.' , 3)
+    inv_no =inv_no.replace('.', '_').replace(':', '_')
+    # print(inv_no)
     # print(f'city={city_date}')
     city=city_date.split(',')[0].strip()
     date=city_date.split(',')[1].strip()
