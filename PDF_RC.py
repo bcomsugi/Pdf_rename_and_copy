@@ -27,7 +27,7 @@ ori_directory_fullpath = config['conf']['fullpath_ori_directory']
 # target_directory_fullpath = os.path.join(os.getcwd(),'targetdir')
 target_directory_fullpath = config['conf']['fullpath_target_directory']
 print(ori_directory_fullpath, target_directory_fullpath)
-if not (os.path.isdir(ori_directory_fullpath) and os.path.isdir(target_directory_fullpath)):
+if not (os.path.isdir(ori_directory_fullpath) and target_directory_fullpath):
     print("")
     print("Please fill the config.ini with the correct directory")
     print("[conf]")
@@ -50,7 +50,6 @@ def check_or_create_directory(new_DIR):
         os.makedirs(new_DIR)
         print(f"created folder : {new_DIR}")
         return True
-
     else:
         print(f'Folder already exists=>{new_DIR}')
         return False
@@ -81,19 +80,22 @@ def read_pdf(filename):
 
     # printing number of pages in pdf file
     # print(pdfReader.numPages)
-    print(f'total pages={len(pdfReader.pages)}')
+    tot_pages=len(pdfReader.pages)
+    print(f'total pages={tot_pages}')
+    reader_splited=[]
+    for i in range(tot_pages):
+        print(i)
+        # creating a page object
+        # pageObj = pdfReader.getPage(0)
+        pageObj = pdfReader.pages[i]
 
-    # creating a page object
-    # pageObj = pdfReader.getPage(0)
-    pageObj = pdfReader.pages[0]
+        # extracting text from page
+        # print(pageObj.extract_text())
+        reader_splited+=pageObj.extract_text().split('\n')\
 
-    # extracting text from page
-    # print(pageObj.extract_text())
-    splited=pageObj.extract_text().split('\n')\
-
-    # print(splited)
+    # print(reader_splited)
     pdfFileObj=None
-    return splited
+    return reader_splited
 
 def get_data_from(data, str, j=1):
     i=0
