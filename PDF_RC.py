@@ -174,21 +174,33 @@ def get_value_for_filename(filename, datalist):
             if filename == key:
                 return val
 
-def move_files_in_dir(sourcedir, targetdir, datalist):
+def move_files_in_dir(sourcedir, targetdir, datalist, success_list):
     print(f'Moving ORI Files To BACKUP from {sourcedir} TO {targetdir}')
-    # for file in get_files_in_dir(sourcedir):
-    for data in datalist:
-        # print(data)
-        for file, val in data.items():
-            # print(f'file={file}, val={val}')
-            month_backup_folder=val[3].split(' ')[-2].strip()
-            year_backup_folder=val[3].split(' ')[-1].strip()
-            targetdir=targetdir.replace('[year]',year_backup_folder)
-            targetdir=targetdir.replace('[month]',month_backup_folder)
-            check_or_create_directory(targetdir)
-            # print(f'targetdir={targetdir}', type(targetdir))
-            shutil.copy(os.path.join(sourcedir, file), os.path.join(targetdir, file))
-            os.remove(os.path.join(sourcedir, file))
+    for success_file in success_list:
+        print(success_file)
+        file = success_file[1].strip()
+        month_backup_folder=success_file[5].strip()
+        year_backup_folder=success_file[4].strip()
+
+        targetdir=targetdir.replace('[year]',year_backup_folder)
+        targetdir=targetdir.replace('[month]',month_backup_folder)
+        check_or_create_directory(targetdir)
+        print(f'targetdir={targetdir}', type(targetdir))
+        shutil.copy(os.path.join(sourcedir, file), os.path.join(targetdir, file))
+        os.remove(os.path.join(sourcedir, file))
+
+    # for data in datalist:
+    #     # print(data)
+    #     for file, val in data.items():
+    #         # print(f'file={file}, val={val}')
+    #         month_backup_folder=val[3].split(' ')[-2].strip()
+    #         year_backup_folder=val[3].split(' ')[-1].strip()
+    #         targetdir=targetdir.replace('[year]',year_backup_folder)
+    #         targetdir=targetdir.replace('[month]',month_backup_folder)
+    #         check_or_create_directory(targetdir)
+    #         # print(f'targetdir={targetdir}', type(targetdir))
+    #         shutil.copy(os.path.join(sourcedir, file), os.path.join(targetdir, file))
+    #         os.remove(os.path.join(sourcedir, file))
 
 # keys = list(str(*my_dict) for my_dict in datalist)
 # print (type(keys))
@@ -225,7 +237,7 @@ for idx, filename in enumerate(filelist):
         fail_count+=1
         print(f'{idx+1}==>[{new_filename}], [{new_city_foldername}], [{new_year_foldername}], [{converted_month_foldername}], [{new_cust_foldername}], [{filename}]')
         print(f"ERROR: {idx+1}==>[{filename}] month not found, Tell IT dept to investigate")
-        fail_filelist.append((new_filename, filename))
+        fail_filelist.append((new_filename, filename, new_cust_foldername, new_city_foldername, new_year_foldername))
 
         continue
     if new_filename:
@@ -239,7 +251,7 @@ for idx, filename in enumerate(filelist):
         except Exception as e :
             print(str(e))
             fail_count+=1
-            fail_filelist.append((new_filename, filename))
+            fail_filelist.append((new_filename, filename, new_cust_foldername, new_city_foldername, new_year_foldername))
             continue
 
         # # copy/move to destination folder
@@ -251,10 +263,10 @@ for idx, filename in enumerate(filelist):
         shutil.copy(new_filename_fullpath, target_copy_filename)
     else:
         fail_count+=1
-        fail_filelist.append((new_filename, filename))
+        fail_filelist.append((new_filename, filename, new_cust_foldername, new_city_foldername, new_year_foldername))
         continue
     # print("")
-    success_filelist.append((new_filename, filename))
+    success_filelist.append((new_filename, filename, new_cust_foldername, new_city_foldername, new_year_foldername, month_foldername))
 
 #finish copy to temp folder and rename and copy to target folder, then delete the temp folder   
 shutil.rmtree( temp_directory )
@@ -262,7 +274,7 @@ shutil.rmtree( temp_directory )
 print("")
 # backup_dir_fullpath=os.path.join(os.path.dirname(ori_directory_fullpath), f"backup\\{year_backup_folder}\\data ori")
 backup_dir_fullpath = os.path.join(os.path.dirname(ori_directory_fullpath), f"backup\\[year]\\[month]\\data ori")
-move_files_in_dir(ori_directory_fullpath, backup_dir_fullpath, datalist)
+move_files_in_dir(ori_directory_fullpath, backup_dir_fullpath, datalist, success_filelist)
 
 print("")
 # print("")
