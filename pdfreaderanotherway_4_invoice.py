@@ -109,7 +109,7 @@ for page_layout in extract_pages(filename):
                             print( "grandTotal ->", textline,  'grandTotal')
                             grandTotal = textline.get_text().split('\n')[0].split('Rp')[1].strip()
                             grandTotal = convertRPToFloat(grandTotal)
-                            print(grandTotal)
+                            print(grandTotal, type(grandTotal))
                             
 
     print(items, len(items))
@@ -149,7 +149,7 @@ if df['FullName'].isnull().sum() > 0:
     # return listitemNoFullName
 else:
     print(df)
-    df = df.astype({'Price': 'float'})
+    # df = df.astype({'Price': 'float'})
     print(df.info())
     # print(df)
     lst = df.to_dict('records')
