@@ -1,5 +1,5 @@
 from pdfminer.high_level import extract_pages, extract_text     #pip install pdfminer-six
-from pdfminer.layout import LTTextContainer, LTTextLineHorizontal, LTPage
+from pdfminer.layout import LTTextContainer, LTTextLineHorizontal, LTPage, LTTextBoxHorizontal
 # import tabula
 # import PyPDF2
 import pandas as pd
@@ -44,6 +44,9 @@ def convertRPToFloat(data:str):
         print('salah')
     return None
 firstLineNumber = None
+
+
+
 for page_layout in extract_pages(filename):
     # print(type(page_layout), page_layout, page_layout.pageid)
     # if page_layout.pageid == 1:
@@ -214,8 +217,8 @@ df = pd.DataFrame(newdata, columns=['lineno', 'Item No', 'SJNo', 'Quantity', 'UO
 # df=pd.DataFrame(newdata, columns=['Item No', 'Description', 'SJNo', 'Quantity', 'UOM', 'Price'])#, columns=data[0]+"UOM")
 print(df)
 df['NameFromTaco']=df['Item No']
-print(df)
-
+# print(df)
+# print("afterdf")
 inteminvdf = pd.read_excel('ItemInventory140723.xlsx', usecols=['FullName', 'NameFromTaco'])
 
 df=df.merge(inteminvdf, how='left')
@@ -224,7 +227,14 @@ if df['FullName'].isnull().sum() > 0:
 
     print("Cannot Find Item FullName")
     listitemNoFullName = df.loc[df['FullName'].isnull()].values.tolist()
-    print(df.loc[df['FullName'].isnull()].values)
+    # print(df.loc[df['FullName'].isnull()].values)
+    # print(df.loc[df['FullName'].isnull(), df['UOM']==None].values)
+    df.loc[df['UOM'].isna() & df['FullName'].isnull(),'FullName']=df['Item No']
+    # print(dftemp)
+    print(df)
+    # dftemp['FullName']=dftemp['SJNo']
+    # print(dftemp)
+    # print(df.loc[df['UOM'].isna() & df['FullName'].isnull()])
     print(listitemNoFullName)
     # return listitemNoFullName
 else:
@@ -237,4 +247,29 @@ else:
     DeliveryNotedict['lines']=lst
     print(DeliveryNotedict)
     # return deliveryNotedict
-print(df)
+# # print(df)
+# df = df.sort_values(['SJNo', 'lineno'])
+# print(df)
+# lst = df.to_dict('records')
+# # print(lst)
+# DeliveryNotedict['lines']=lst
+# print(DeliveryNotedict)
+# print("end")
+# for _ in DeliveryNotedict['lines']:
+#     if isinstance(_['FullName'], float):
+#         print(_['FullName'])
+#     print(_['lineno'], _['FullName'], type(_['FullName']))
+
+
+
+for page_layout in extract_pages(filename):
+    if True:
+        print(f'page:{page_layout.pageid}')
+        print(page_layout)
+
+        for element in page_layout:
+            print(element, type(element))
+            # if isinstance(element, LTTextContainer):
+            if isinstance(element, LTTextBoxHorizontal):
+                for el in element:
+                    print(el)
