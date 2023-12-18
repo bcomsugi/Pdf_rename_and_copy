@@ -1,5 +1,5 @@
 from pdfminer.high_level import extract_pages, extract_text     #pip install pdfminer-six
-from pdfminer.layout import LTTextContainer, LTTextLineHorizontal, LTPage, LTTextBoxHorizontal
+from pdfminer.layout import LAParams, LTTextContainer, LTTextLineHorizontal, LTPage, LTTextBoxHorizontal, LTRect, LTTextBox, LTTextBoxVertical
 # import tabula
 # import PyPDF2
 import pandas as pd
@@ -260,16 +260,36 @@ else:
 #         print(_['FullName'])
 #     print(_['lineno'], _['FullName'], type(_['FullName']))
 
-
-
-for page_layout in extract_pages(filename):
+laparams = LAParams(word_margin=0.1)
+for page_layout in extract_pages(filename, laparams=laparams):
+    ltrect=[]
+    lttextboxhorizontals_element = []
+    lttextboxhors = []
+    lttextboxs = []
+    lttextboxvers = []
     if True:
         print(f'page:{page_layout.pageid}')
         print(page_layout)
 
+
         for element in page_layout:
-            print(element, type(element))
+            # print(element, type(element))
+            if isinstance(element, LTTextBoxVertical):
+                lttextboxvers.append(element)
+            if isinstance(element, LTRect):
+                # print(element)
+                ltrect.append(element)
             # if isinstance(element, LTTextContainer):
+            if isinstance(element, LTTextBox):
+                lttextboxs.append(element)
             if isinstance(element, LTTextBoxHorizontal):
+                lttextboxhors.append(element)
+
                 for el in element:
-                    print(el)
+                    # print(el)
+                    lttextboxhorizontals_element.append(el)
+        print(lttextboxhorizontals_element, len(lttextboxhorizontals_element))
+        print(ltrect, len(ltrect))
+        print(lttextboxhors, len(lttextboxhors))
+        print(lttextboxs, len(lttextboxs))
+        print(lttextboxvers, len(lttextboxvers))
