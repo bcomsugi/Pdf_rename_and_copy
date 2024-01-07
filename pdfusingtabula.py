@@ -180,7 +180,7 @@ def convert_pdf(filename:str):
 
     df=df.merge(inteminvdf, how='left')
     # print(df['FullName'].isnull().values.any())
-    # print(df)
+    print(df)
     if df['FullName'].isnull().sum() > 0:
 
         print("Cannot Find Item FullName")
@@ -214,7 +214,7 @@ if "__main__" == __name__:
     print(list_dir())
     starttime = timeit.default_timer()
     lstConvert = []
-    for idx, _ in enumerate(list_dir("D:\Project\Python38\DNPG\okt")):
+    for idx, _ in enumerate(list_dir("D:\Project\Python38\DNPG\okt")[:1]):
         lstConvert.append(convert_pdf(_))
     for _ in lstConvert:
         print(_)

@@ -222,10 +222,12 @@ df['NameFromTaco']=df['Item No']
 inteminvdf = pd.read_excel('ItemInventory140723.xlsx', usecols=['FullName', 'NameFromTaco'])
 
 df=df.merge(inteminvdf, how='left')
-print(df['FullName'].isnull().values.any())
+df.loc[(df['Item No']=='400_Sales Discount'), "FullName"] = df['Item No']
+print(f"null values are: {df['FullName'].isnull().values.any()}")
 if df['FullName'].isnull().sum() > 0:
 
     print("Cannot Find Item FullName")
+    print(df.loc[(df['Item No']=='400_Sales Discount')])
     listitemNoFullName = df.loc[df['FullName'].isnull()].values.tolist()
     # print(df.loc[df['FullName'].isnull()].values)
     # print(df.loc[df['FullName'].isnull(), df['UOM']==None].values)
