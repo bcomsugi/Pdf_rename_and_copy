@@ -2,6 +2,7 @@ import tabula
 import timeit
 import pandas as pd
 from pdftools import get_column_bbox, get_area_table, list_dir
+import pprint
 
 
 def convert_pdf(filename:str):
@@ -235,7 +236,7 @@ def convert_pdf(filename:str):
         lst = df.to_dict('records')
         # print(lst)
         DeliveryNotedict['lines']=lst
-        print(DeliveryNotedict, len(DeliveryNotedict['lines']))
+        print(pprint.pprint(DeliveryNotedict), len(DeliveryNotedict['lines']))
         print(f'Timeit = {timeit.default_timer() - start}')
         return DeliveryNotedict
 
