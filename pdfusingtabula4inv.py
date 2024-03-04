@@ -8,14 +8,16 @@ import pprint
 def convert_pdf(filename:str):
     start = timeit.default_timer()
     print(f'Filename:{filename}')
-    # filename = "example_001.pdf"
-    filename = r"c:\Users\bcoms\Downloads\63178-27.pdf" ### invoice ###
-    filename = r"c:\Users\bcoms\Downloads\65928-05.pdf"
-    filename = r"c:\Users\bcoms\Downloads\61090-04.pdf"
-    # filename = "TCO-DNPG-2303-0951.pdf"
-    # filename = r"c:\Users\bcoms\Downloads\TCO-DNKR-2311-00510.pdf"
-    # filename = r"c:\Users\bcoms\Downloads\TCO-DNKR-2307-00361.pdf"
-    # filename = "oriDNPG\TCO-DNPR-2305-00305.pdf"
+    if filename==None or filename.strip() =="":
+        # filename = "example_001.pdf"
+        filename = r"c:\Users\bcoms\Downloads\63178-27.pdf" ### invoice ###
+        # filename = r"c:\Users\bcoms\Downloads\65928-05.pdf"
+        # filename = r"c:\Users\bcoms\Downloads\61090-04.pdf"
+
+        # filename = "TCO-DNPG-2303-0951.pdf"
+        # filename = r"c:\Users\bcoms\Downloads\TCO-DNKR-2311-00510.pdf"
+        # filename = r"c:\Users\bcoms\Downloads\TCO-DNKR-2307-00361.pdf"
+        # filename = "oriDNPG\TCO-DNPR-2305-00305.pdf"
     # Read pdf into a list of DataFrame
     # dfs_source = tabula.read_pdf(filename, pages='all', multiple_tables=True, lattice=True)
     # dfs_source = tabula.read_pdf(filename, pages='all', multiple_tables=True, lattice=False, area=[230, 42, 600, 580])
@@ -24,7 +26,7 @@ def convert_pdf(filename:str):
     page_height = 839
     page_width = 596
     column_bbox=get_column_bbox(filename, 'inv')
-    print(column_bbox)
+    print("column bbox", column_bbox)
     header_area = get_area_table(column_bbox)
     print(header_area)
     area = (page_height-header_area[3], header_area[0], page_height-header_area[3]+370, page_width )
@@ -236,7 +238,7 @@ def convert_pdf(filename:str):
         lst = df.to_dict('records')
         # print(lst)
         DeliveryNotedict['lines']=lst
-        print(pprint.pprint(DeliveryNotedict), len(DeliveryNotedict['lines']))
+        print("deliveryNotedict", pprint.pprint(DeliveryNotedict), len(DeliveryNotedict['lines']))
         print(f'Timeit = {timeit.default_timer() - start}')
         return DeliveryNotedict
 
@@ -260,7 +262,14 @@ if "__main__" == __name__:
     #     lstConvert.append(convert_pdf(_))
     # for _ in lstConvert:
     #     print(_)
-    convert_pdf("")
-    # print(f'Timeit all = {timeit.default_timer() - starttime}, {idx+1} files')
-    print(f'Timeit all = {timeit.default_timer() - starttime},  files')
+
+    for idx, _ in enumerate(list_dir("P:\ACCOUNTING\A. INVOICE DISTRINDO BAKTI WUTAMA\SURYA KARYA BANGUNAN")):
+        lstConvert.append(convert_pdf(_))
+    for _idx, _ in enumerate(lstConvert):
+        print(_idx, _)
+        print("")
+
+    # convert_pdf(r"P:\ACCOUNTING\A. INVOICE DISTRINDO BAKTI WUTAMA\SURYA KARYA BANGUNAN\47839-13.pdf")
+    # print(f'Timeit all = {timeit.default_timer() - starttime}, {idx+1} files') 
+    print(f'Timeit all = {timeit.default_timer() - starttime},  {len(lstConvert)} files')
     

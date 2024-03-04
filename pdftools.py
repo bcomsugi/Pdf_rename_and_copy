@@ -70,7 +70,7 @@ def get_column_bbox(filename=None, type:str=None):
             bbox = {'bbox_Item': bbox_Item, 'bbox_Desc': bbox_Description, 'bbox_Qty': bbox_QuantityUOM, 'bbox_SO': bbox_NoSO, 'bbox_LPN': bbox_Price}
 
             return bbox
-        else:
+        else:   ###type inv
             for page_layout in extract_pages(filename,   page_numbers=[0]):
                 print(f'page inv pdf:{page_layout.pageid}')
                 ymin= 0
@@ -78,7 +78,7 @@ def get_column_bbox(filename=None, type:str=None):
                     if isinstance(element, LTTextContainer):
                         # print(element.get_text())
                         # print(element)
-                        if 40 < element.bbox[0] < 600 and 54 < element.bbox[1] < 590:
+                        if 16 < element.bbox[0] < 600 and 54 < element.bbox[1] < 590:
                             # print(element)
                             if 'Item' in element.get_text():
                                 # if ymin < element.bbox[1]:
