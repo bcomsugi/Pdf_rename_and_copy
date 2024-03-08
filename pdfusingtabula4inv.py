@@ -5,7 +5,7 @@ from pdftools import get_column_bbox, get_area_table, list_dir
 import pprint
 
 
-def convert_pdf(filename:str):
+def convert_pdf(filename:str, debug:bool=False):
     start = timeit.default_timer()
     print(f'Filename:{filename}')
     if filename==None or filename.strip() =="":
@@ -27,6 +27,8 @@ def convert_pdf(filename:str):
     page_width = 596
     column_bbox=get_column_bbox(filename, 'inv')
     print("column bbox", column_bbox)
+    if column_bbox == None:
+        return None
     header_area = get_area_table(column_bbox)
     print(header_area)
     area = (page_height-header_area[3], header_area[0], page_height-header_area[3]+370, page_width )
@@ -48,6 +50,8 @@ def convert_pdf(filename:str):
     for _ in dfs_source:
         print(_, type(_))
     # exit()
+        
+
     def get_sublist(itemdesc : str):
         if isinstance(itemdesc, str):
             # print(itemdesc, type(itemdesc))
@@ -61,11 +65,12 @@ def convert_pdf(filename:str):
         else:
             print(f" none:{itemdesc}")
         return None
+    
+
     grand_total = 0
     dfs=[]
 
     for idx_df, df in enumerate(dfs_source):
-        
         print(f' idx:{idx_df}')
         print(df)
         if 'Item' in df:
@@ -157,10 +162,10 @@ def convert_pdf(filename:str):
 
     df = pd.concat(dfs).reset_index(drop=True)
 
-    print(f'concated:{df}')
+    if debug:print(f'concated:{df}')
     # df = df.groupby(df.index // 2).agg(lambda x: ' '.join(x.ffill(downcast='infer').astype(str).unique())).drop('index', axis=1)
     df['Qty'] = df['Qty'].fillna('1')
-    print(df)
+    if debug:print("df:", df)
     df['Qty'] = df['Qty'].astype('float')
     # print(df)
     # print(df)
@@ -182,10 +187,10 @@ def convert_pdf(filename:str):
     ### get_Header  INVOICE DBW ###
     Branch = None
     for header in df_header:
-        print(header, type(header))
+        if debug:print(header, type(header))
         if 'Date' in header:
             for _ in header.values.tolist():
-                print(_, type(_))
+                if debug:print(_, type(_))
                 TxnDate = _[0]
                 DNRefNum = _[1]
                 # if 'TCO-DN' in _[0]:
@@ -201,7 +206,7 @@ def convert_pdf(filename:str):
                 #     Branch = 'BGR'
         elif 'Bill To' in header:
             for _ in header.values.tolist():
-                print(_, type(_))
+                if debug:print(_, type(_))
                 BillTo = _[0]
                 # DNRefNum = _[1]
 
@@ -222,7 +227,7 @@ def convert_pdf(filename:str):
     df.loc[(df['Item']=='Sales Ekspedisi') & (df['FullName'].isnull()), "FullName"] = df['Item']
 
     # print(df['FullName'].isnull().values.any())
-    print(df)
+    if debug:print(df)
     if df['FullName'].isnull().sum() > 0:
 
         print("Cannot Find Item FullName")
@@ -234,7 +239,7 @@ def convert_pdf(filename:str):
     else:
         # print(df)
         # df=df.groupby(['Ext.Doc.No', 'No.SO','Item No', 'UOM', 'FullName'])['Quantity'].sum().reset_index().sort_values(by=['Ext.Doc.No','No.SO', 'Item No'])
-        print(df)
+        if debug:print(df)
         lst = df.to_dict('records')
         # print(lst)
         DeliveryNotedict['lines']=lst
@@ -255,7 +260,7 @@ def convert_pdf(filename:str):
 
 
 if "__main__" == __name__:
-    print(list_dir())
+    # print(list_dir())
     starttime = timeit.default_timer()
     lstConvert = []
     # for idx, _ in enumerate(list_dir("D:\Project\Python38\DNPG\okt")):
@@ -263,13 +268,26 @@ if "__main__" == __name__:
     # for _ in lstConvert:
     #     print(_)
 
-    for idx, _ in enumerate(list_dir("P:\ACCOUNTING\A. INVOICE DISTRINDO BAKTI WUTAMA\SURYA KARYA BANGUNAN")):
-        lstConvert.append(convert_pdf(_))
-    for _idx, _ in enumerate(lstConvert):
-        print(_idx, _)
-        print("")
+    # for idx, _ in enumerate(list_dir("P:\ACCOUNTING\A. INVOICE DISTRINDO BAKTI WUTAMA\SURYA KARYA BANGUNAN")):
+    #     lstConvert.append(convert_pdf(_))
+    # for _idx, _ in enumerate(lstConvert):
+    #     print(_idx, _)
+    #     print("")
+    # print(list_dir(r"P:\ACCOUNTING\A. INVOICE DISTRINDO BAKTI WUTAMA\SURYA KARYA BANGUNAN"))
+
+    # for idx, _ in enumerate(list_dir(r"P:\ACCOUNTING\A. INVOICE DISTRINDO BAKTI WUTAMA")):
+    #     print(idx, "filename:", _)
+    #     lstConvert.append(convert_pdf(_))
+    # for _idx, _ in enumerate(lstConvert):
+    #     print(_idx, _)
+    #     print("")
 
     # convert_pdf(r"P:\ACCOUNTING\A. INVOICE DISTRINDO BAKTI WUTAMA\SURYA KARYA BANGUNAN\47839-13.pdf")
+    # convert_pdf(r"P:/ACCOUNTING/A. INVOICE DISTRINDO BAKTI WUTAMA/MEGAH INDAH/13594-27.pdf")
+        
+    # convert_pdf(r"P:\ACCOUNTING\A. INVOICE DISTRINDO BAKTI WUTAMA\TM - Price List update Oct 2020 - FC and LVT.pdf")
+    convert_pdf(r"C:/Users/bcoms/Downloads/63178-27.pdf")
+        
     # print(f'Timeit all = {timeit.default_timer() - starttime}, {idx+1} files') 
     print(f'Timeit all = {timeit.default_timer() - starttime},  {len(lstConvert)} files')
     

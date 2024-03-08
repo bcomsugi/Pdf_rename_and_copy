@@ -41,10 +41,15 @@ bbox_QuantityUOM = None
 bbox_NoSO = None
 bbox_Price = None
 bbox = None
-def get_column_bbox(filename=None, type:str=None):
+def get_column_bbox(filename=None, type:str=None, objYear:str="2023", debug:bool=False):
     # print(filename)
+    # objYear="/"+objYear
+    objYear = objYear + "\n"
+    print(objYear)
+    isDateSame = False
     bbox=None
     bbox_Item, bbox_Description, bbox_Price, bbox_NoSO, bbox_QuantityUOM = None,None,None,None,None
+    bbox_Total = None
     if filename:
         if type == None:
             for page_layout in extract_pages(filename,   page_numbers=[0]):
@@ -53,6 +58,8 @@ def get_column_bbox(filename=None, type:str=None):
                     if isinstance(element, LTTextContainer):
                         # print(element.get_text())
                         # print(element)
+                        if objYear in element.get_text():
+                            isDateSame =  True
                         if 40 < element.bbox[0] < 600 and 540 < element.bbox[1] < 560:
                             # print(element)
                             if 'Item' in element.get_text():
@@ -76,8 +83,11 @@ def get_column_bbox(filename=None, type:str=None):
                 ymin= 0
                 for element in page_layout:
                     if isinstance(element, LTTextContainer):
-                        # print(element.get_text())
+                        if debug:print(element.get_text())
                         # print(element)
+                        if objYear in element.get_text():
+                            # print(objYear, "true")
+                            isDateSame =  True
                         if 16 < element.bbox[0] < 600 and 54 < element.bbox[1] < 590:
                             # print(element)
                             if 'Item' in element.get_text():
@@ -93,16 +103,16 @@ def get_column_bbox(filename=None, type:str=None):
                                 bbox_Description = element.bbox
                                 if ymin < element.bbox[1]:
                                     ymin = element.bbox[1]
-                                print(ymin)
+                                # print(ymin)
                             if 'Qty' in element.get_text():
                                 # if ymin < element.bbox[1]:
                                 #     ymin = element.bbox[1]
                                 bbox_QuantityUOM = element.bbox
                                 if ymin < element.bbox[1]:
                                     ymin = element.bbox[1]
-                                    print(ymin)
+                                    # print(ymin)
                                 bbox_QuantityUOM = (element.bbox[0], ymin, element.bbox[2], element.bbox[3])
-                                print(ymin)
+                                # print(ymin)
                             if 'SJ' in element.get_text():
                                 # if ymin < element.bbox[1]:
                                 #     ymin = element.bbox[1]
@@ -116,7 +126,7 @@ def get_column_bbox(filename=None, type:str=None):
                                 bbox_Price = element.bbox
                                 if ymin < element.bbox[1]:
                                     ymin = element.bbox[1]
-                                print(ymin)
+                                # print(ymin)
                                 bbox_Price = (element.bbox[0], ymin, element.bbox[2], element.bbox[3])
                             if 'Total' in element.get_text() and not ('Grand' in element.get_text()):
                                 # if ymin < element.bbox[1]:
@@ -125,12 +135,13 @@ def get_column_bbox(filename=None, type:str=None):
                                 if ymin < element.bbox[1]:
                                     ymin = element.bbox[1]
                                 bbox_Total = (element.bbox[0], ymin, element.bbox[2], element.bbox[3])
-                print(ymin)
+                if debug:print(ymin)
             # else:
             #     print("eeror")
             bbox = {'bbox_Item': bbox_Item, 'bbox_Desc': bbox_Description, 'bbox_Qty': bbox_QuantityUOM, 'bbox_SO': bbox_NoSO, 'bbox_Price': bbox_Price, 'bbox_Total': bbox_Total}
-
-            return bbox
+            if isDateSame:
+                return bbox
+            else: return None
     else:
         return None
 #bbox = get_column_bbox(filename)
