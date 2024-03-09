@@ -25,6 +25,7 @@ def list_dir(dir:str = None, filetype:str=".pdf"):
                 # print(os.path.join(dir_path, filename))
                 lstDir.append(os.path.join(dir_path, filename))
     # print(res)
+    print(f'Timeit {__name__}= {timeit.default_timer() - start}')
     print("")
     return lstDir
 

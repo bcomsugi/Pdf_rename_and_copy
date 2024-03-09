@@ -223,6 +223,7 @@ def convert_pdf(filename:str, debug:bool=False):
     df=df.merge(inteminvdf, how='left', left_on='Item', right_on='Name').reset_index()
     df.loc[(df['Item']=='400_Sales Discount') & (df['FullName'].isnull()), "FullName"] = df['Item']
     df.loc[(df['Item']=='Sales Promo Discount') & (df['FullName'].isnull()), "FullName"] = df['Item']
+    df.loc[(df['Item']=='Sales Promo Discou...') & (df['FullName'].isnull()), "FullName"] = "Sales Promo Discount"
     df.loc[(df['Item']=='PETI') & (df['FullName'].isnull()), "FullName"] = df['Item']
     df.loc[(df['Item']=='Sales Ekspedisi') & (df['FullName'].isnull()), "FullName"] = df['Item']
 
