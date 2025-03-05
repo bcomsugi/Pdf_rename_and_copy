@@ -88,7 +88,7 @@ def isYearCorrect(page, year):
 
 def convertPDF(filename:str, year:str="2024" ,debug:bool=False):
     doc = fitz.open(filename) # open a document
-    if not isYearCorrect(doc[0], "2024"): return None
+    if not isYearCorrect(doc[0], year): return None
     lines = []
     grandTotal = None
     for page in doc: # iterate the document pages
@@ -99,7 +99,7 @@ def convertPDF(filename:str, year:str="2024" ,debug:bool=False):
         print(f"{len(tabs.tables)} table(s) on {page}")
         if len(tabs.tables) < 3:continue
         if len(tabs.tables) == 4: tab = tabs[-2]
-        elif len(tabs.table) == 3: tab = tabs[-1]
+        elif len(tabs.tables) == 3: tab = tabs[-1]
         else: continue
         noneCol = None
         # print(tab.extract()[0])
@@ -167,6 +167,7 @@ def convertPDF(filename:str, year:str="2024" ,debug:bool=False):
     # print(df.info())
 
     df["xTotal"] = df["xQty"]*df["Price"]
+    df.sort_values(by=["SJ No"], inplace=True)
     # df = tab.to_pandas()
     # print(df)
     notSameTotal = df[df["xTotal"]!=df["Total"]]
@@ -196,15 +197,15 @@ if "__main__" == __name__:
     lstConvert = []
     noneCounter = 0
 
-    for idx, _ in enumerate(list_dir(r"P:\ACCOUNTING\A. INVOICE DISTRINDO BAKTI WUTAMA")):
-        print(idx, "filename:", _)
-        lstConvert.append(convertPDF(_, "2023"))
-    for _idx, _ in enumerate(lstConvert):
+    # for idx, _ in enumerate(list_dir(r"P:\ACCOUNTING\A. INVOICE DISTRINDO BAKTI WUTAMA")):
+    #     print(idx, "filename:", _)
+    #     lstConvert.append(convertPDF(_, "2023"))
+    # for _idx, _ in enumerate(lstConvert):
 
-        if _==None:noneCounter+=1
-        print(_idx, _)
-        print("")
-    print(len(lstConvert))
+    #     if _==None:noneCounter+=1
+    #     print(_idx, _)
+    #     print("")
+    # print(len(lstConvert))
 
 
     # filename = r"C:/Users/bcoms/Downloads/63178-27.pdf"
@@ -212,4 +213,5 @@ if "__main__" == __name__:
     # filename = r"P:\ACCOUNTING\A. INVOICE DISTRINDO BAKTI WUTAMA\67489-17.pdf"
     # filename = r"P:\ACCOUNTING\A. INVOICE DISTRINDO BAKTI WUTAMA\ATRIA\CV ATRIA MITRA MULIA\68079-01 FIX POTONGAN TACO.pdf"
     # filename = r"P:/ACCOUNTING/A. INVOICE DISTRINDO BAKTI WUTAMA/ANEKA MATERIAL BALONGSARI/68083-01 Potongan Taco HPL Solid Colour Januari 2024.pdf"
-    # convertPDF(filename)
+    filename = r"P:\ACCOUNTING\A. INVOICE DISTRINDO BAKTI WUTAMA\HS\25730-18 REVISI.pdf"
+    convertPDF(filename, "2020")

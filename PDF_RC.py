@@ -139,6 +139,7 @@ def get_pdfname_foldername_tosave(filename, str='Gondo Kusumo', j=1):
 
     filename_fullpath = os.path.join(temp_directory, filename)
     splited = read_pdf(filename_fullpath)
+    # print(splited)
     str ='Penerima Jasa Kena Pajak'
     # print(get_data_from(splited, str))
 
@@ -149,7 +150,13 @@ def get_pdfname_foldername_tosave(filename, str='Gondo Kusumo', j=1):
     # print(nama_wajib_pajak)
     city_date= get_data_from(splited, 'pada Faktur Pajak ini.', j).strip()
     # inv_no = get_data_from(splited, str, j)
-    inv_no = get_data_from(splited, 'pada Faktur Pajak ini.' , 3)
+    
+    inv_no = get_data_from(splited, 'Referensi:' , 0)   #for pdf after coretax
+    # print(f'{inv_no = }')
+    if inv_no:
+        inv_no = inv_no.replace(')', '').split( ":")[1].strip() #for pdf after coretax
+    else:
+        inv_no = get_data_from(splited, 'pada Faktur Pajak ini.' , 3) #for old style pdf jan 2025 below, before coretax
     inv_no =inv_no.replace('.', '_').replace(':', '_')
     # print(inv_no)
     # print(f'city={city_date}')
@@ -208,8 +215,14 @@ def move_files_in_dir(sourcedir, targetdir, datalist, success_list):
 copy_files_to_temp(ori_directory_fullpath, temp_directory)
 filelist = get_files_in_dir(temp_directory, '.pdf')
 
+
+
 print("READING FILES and Get Datalist:")
 datalist=get_data_list(filelist)
+
+# import sys
+# sys.exit()
+
 folder = 'result'
 success_count=0
 fail_count=0
@@ -222,14 +235,17 @@ print("")
 for idx, filename in enumerate(filelist):
     # print(f'filename={filename} => {get_value_for_filename(filename,get_data_list(filelist))}')
     values=get_value_for_filename(filename, datalist)
-    # print(f'values in list={values}')
+    print(f'values in list={values}')
 
     new_filename = f'{values[0]}.pdf'
     new_cust_foldername = values[1].strip()
     new_city_foldername = values[2].split(' ')[-1].strip()
-    month_foldername = values[3].strip().split(' ')[-2].strip()
+    dates = [x for x in values[3].strip().split(' ') if x]
+    month_foldername = dates[1].strip()
+    # month_foldername = values[3].strip().split(' ')[-2].strip()
     new_year_foldername = values[3].split(' ')[-1].strip()
     converted_month_foldername=month_foldername
+    print(f"{values[3].strip().split(' ')[1].strip() = } {month_foldername = } {new_year_foldername = }")
     if month_foldername in month_folder_list:
         converted_month_foldername = month_folder_list[month_foldername]
         print(f'{idx+1}==>[{new_filename}], [{new_city_foldername}], [{new_year_foldername}], [{converted_month_foldername}], [{new_cust_foldername}], [{filename}]')
