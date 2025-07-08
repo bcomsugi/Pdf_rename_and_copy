@@ -4,6 +4,7 @@ import os
 
 # list to store files
 def get_files_in_dir(dir_path, endwith='.pdf'):
+    print(f'get_files_in_dir: {dir_path = } {endwith = }')
     # dir_path = os.getcwd()
     # print(dir_path)
     res = []

@@ -28,19 +28,32 @@ data_dir='data ori'
 ori_directory_fullpath = config['conf']['fullpath_ori_directory']
 parent_ori_directory = os.path.dirname(ori_directory_fullpath)
 # city_source = parent_ori_directory.split("\\")[-1].strip()
-# print(city_source)
-month_folder_list = {'Januari':'1. Jan Feb Mar',
-                    'Februari':'1. Jan Feb Mar',
-                    'Maret':'1. Jan Feb Mar',
-                    'April':'2. Apr Mei Jun',
-                    'Mei':'2. Apr Mei Jun',
-                    'Juni':'2. Apr Mei Jun',
-                    'Juli':'3. Jul Agu Sep',
-                    'Agustus':'3. Jul Agu Sep',
-                    'September':'3. Jul Agu Sep',
-                    'Oktober':'4. Okt Nov Des',
-                    'November':'4. Okt Nov Des',
-                    'Desember':'4. Okt Nov Des', 
+# # print(city_source)
+# month_folder_list = {'Januari':'1. Jan Feb Mar',
+#                     'Februari':'1. Jan Feb Mar',
+#                     'Maret':'1. Jan Feb Mar',
+#                     'April':'2. Apr Mei Jun',
+#                     'Mei':'2. Apr Mei Jun',
+#                     'Juni':'2. Apr Mei Jun',
+#                     'Juli':'3. Jul Agu Sep',
+#                     'Agustus':'3. Jul Agu Sep',
+#                     'September':'3. Jul Agu Sep',
+#                     'Oktober':'4. Okt Nov Des',
+#                     'November':'4. Okt Nov Des',
+#                     'Desember':'4. Okt Nov Des', 
+#                     }
+month_folder_list = {'Januari':'1. Jan',
+                    'Februari':'2. Feb',
+                    'Maret':'3. Mar',
+                    'April':'4. Apr',
+                    'Mei':'5. Mei',
+                    'Juni':'6. Jun',
+                    'Juli':'7. Jul',
+                    'Agustus':'8. Agu',
+                    'September':'9. Sep',
+                    'Oktober':'10. Okt',
+                    'November':'11. Nov',
+                    'Desember':'12. Des', 
                     }
 # if 'year_backup_folder' in config['conf']:
 #     year_backup_folder = config.get('conf', 'year_backup_folder')
@@ -83,11 +96,11 @@ def check_or_create_directory(new_DIR, debug=False):
         return False
     
 def copy_files_to_temp(oridir, tempdir, endwith='.pdf'):
-    print("Copy file to temp Dir")
+    print(f"Copy file to temp Dir: {oridir = } {tempdir = } {endwith = }")
 
-    _filelist = get_files_in_dir(ori_directory_fullpath, '.pdf')
+    _filelist = get_files_in_dir(ori_directory_fullpath, endwith)
     check_or_create_directory(temp_directory)
-    print(_filelist)
+    print(_filelist, "_filelist")
     for file in _filelist:
         try:
             shutil.copy(os.path.join(oridir, file), os.path.join(tempdir, file))
@@ -136,42 +149,48 @@ def get_data_from(data, str, j=1):
         return None
 
 def get_pdfname_foldername_tosave(filename, str='Gondo Kusumo', j=1):
+    try:
+        filename_fullpath = os.path.join(temp_directory, filename)
+        splited = read_pdf(filename_fullpath)
+        # print(f'{splited = }')
+        str ='Penerima Jasa Kena Pajak'
+        # print(get_data_from(splited, str))
 
-    filename_fullpath = os.path.join(temp_directory, filename)
-    splited = read_pdf(filename_fullpath)
-    # print(splited)
-    str ='Penerima Jasa Kena Pajak'
-    # print(get_data_from(splited, str))
-
-    nama_wajib_pajak=get_data_from(splited, str)
-    if nama_wajib_pajak:
-        nama_wajib_pajak = nama_wajib_pajak.split(':')[1].strip()
-        nama_wajib_pajak = nama_wajib_pajak.split('NIK /')[0].strip()
-    # print(nama_wajib_pajak)
-    city_date= get_data_from(splited, 'pada Faktur Pajak ini.', j).strip()
-    # inv_no = get_data_from(splited, str, j)
-    
-    inv_no = get_data_from(splited, 'Referensi:' , 0)   #for pdf after coretax
-    # print(f'{inv_no = }')
-    if inv_no:
-        inv_no = inv_no.replace(')', '').split( ":")[1].strip() #for pdf after coretax
-    else:
-        inv_no = get_data_from(splited, 'pada Faktur Pajak ini.' , 3) #for old style pdf jan 2025 below, before coretax
-    inv_no =inv_no.replace('.', '_').replace(':', '_')
-    # print(inv_no)
-    # print(f'city={city_date}')
-    city=city_date.split(',')[0].strip()
-    date=city_date.split(',')[1].strip()
-    # month=city_date.split(',')
-    datadict={filename: [inv_no, nama_wajib_pajak, city, date]}
+        nama_wajib_pajak=get_data_from(splited, str)
+        if nama_wajib_pajak:
+            nama_wajib_pajak = nama_wajib_pajak.split(':')[1].strip()
+            nama_wajib_pajak = nama_wajib_pajak.split('NIK /')[0].strip()
+        # print(nama_wajib_pajak)
+        city_date= get_data_from(splited, 'pada Faktur Pajak ini.', j).strip()
+        # inv_no = get_data_from(splited, str, j)
+        
+        inv_no = get_data_from(splited, 'Referensi:' , 0)   #for pdf after coretax
+        # print(f'{inv_no = }')
+        if inv_no:
+            inv_no = inv_no.replace(')', '').split( ":")[1].strip() #for pdf after coretax
+        else:
+            inv_no = get_data_from(splited, 'pada Faktur Pajak ini.' , 3) #for old style pdf jan 2025 below, before coretax
+        inv_no =inv_no.replace('.', '_').replace(':', '_')
+        # print(inv_no)
+        # print(f'city={city_date}')
+        city=city_date.split(',')[0].strip()
+        date=city_date.split(',')[1].strip()
+        # month=city_date.split(',')
+        datadict={filename: [inv_no, nama_wajib_pajak, city, date]}
+    except Exception as e:
+        print(f'{e = }')
+        import time
+        time.sleep(240)
+    # print(f'{len(datadict) = }')
     return datadict
-
+    
 def get_data_list(filelist):
+    print(f'get_data_list: {len(filelist) = }')
     datalist=[]
     for filename in filelist:
         # print(filename)
         datalist.append(get_pdfname_foldername_tosave(filename))
-    print(f'datalist={datalist}')
+    print(f'{datalist = } {len(datalist) = }')
     return datalist
 
 def get_value_for_filename(filename, datalist):
@@ -240,12 +259,13 @@ for idx, filename in enumerate(filelist):
     new_filename = f'{values[0]}.pdf'
     new_cust_foldername = values[1].strip()
     new_city_foldername = values[2].split(' ')[-1].strip()
+    new_cust_foldername = new_cust_foldername.replace("/", "-")
     dates = [x for x in values[3].strip().split(' ') if x]
     month_foldername = dates[1].strip()
     # month_foldername = values[3].strip().split(' ')[-2].strip()
     new_year_foldername = values[3].split(' ')[-1].strip()
     converted_month_foldername=month_foldername
-    print(f"{values[3].strip().split(' ')[1].strip() = } {month_foldername = } {new_year_foldername = }")
+    print(f"{new_filename = } {new_cust_foldername = } {values[3].strip().split(' ')[1].strip() = } {month_foldername = } {new_year_foldername = }")
     if month_foldername in month_folder_list:
         converted_month_foldername = month_folder_list[month_foldername]
         print(f'{idx+1}==>[{new_filename}], [{new_city_foldername}], [{new_year_foldername}], [{converted_month_foldername}], [{new_cust_foldername}], [{filename}]')
